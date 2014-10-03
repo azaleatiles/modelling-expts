@@ -1,8 +1,10 @@
 
-# Population of 10,000 gazelles
-# Some proportion of them encounter lions in each generation
-# Fitness function determines top speed
-# What is the change in top speed over generations (1,000,000)
+#####################################################
+"""
+Filename: genetic-algorithm.py
+
+"""
+#####################################################
 
 import numpy as np
 import matplotlib.pyplot as plt
