@@ -95,13 +95,19 @@ class Population:
             self.run_single_generation()
             self.avfitness.append(self.calc_avfitness())
             i = i + 1
-
+    
     def calc_avfitness(self):
         cfs = 0
         for i in self.genes:
             cfs = cfs + i.get_fitness(targ = self.target)
         return float(cfs) / float(len(self.genes))
-
+    
+    def get_fitness_dist(self):
+        fd = []
+        for i in self.genes:
+            fd.append(i.get_fitness(targ = self.target))    
+        return fd
+    
     def get_fitness_trend(self):
         return self.avfitness
 
@@ -112,33 +118,44 @@ class Experiment:
         self.fecundity      = 10
         self.target         = 'TAGACATTAGACATTAGACAT'
         self.seed           = 'AAAAAAAAAAAAAAAAAAAAA'
-        self.runs           = 10
+        self.runs           = 50
         self.generations    = 50
     
     def plot_results(self,pdata):
         # Generate a histogram showing the distribution of genes
         data = np.array(pdata)
         plt.plot(np.arange(len(pdata)),data)
-
+        plt.xlabel('Generations')
+        plt.ylabel('Average Fitness')   
+ 
+    def plot_dist(self,ddata):
+        # Generate a histogram showing the distribution of genes
+        data = np.array(ddata)
+        plt.hist(data)
+    
     def run(self):
         i = 0
+        fd = []
         while i < self.runs:
             #setup population
             p = Population( popsize=self.populationSize, fecundity=self.fecundity,target=self.target, seed=self.seed)
              
             #run generations
             p.run_generations(generations=self.generations)
+            
+            fd.append(p.calc_avfitness())
 
             #add the trend in average fitness to a results graph
             self.plot_results(np.array(p.get_fitness_trend()))
-            i = i + 1
+            i = i + 1        
 
+        #self.plot_dist(fd)
+        
         print('finished running experiment. Type plt.show() to see the results')
 
 def main():
     e = Experiment()
     e.run()
-
 
 main()
 
