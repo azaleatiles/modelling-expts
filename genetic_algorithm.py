@@ -70,11 +70,12 @@ class Population:
     
     def __init__(self,popsize,fecundity,target,seed):
         
-        self.popsize  = popsize
-        self.fecundity= fecundity
-        self.genes    = []
-        self.target   = target
-        self.seed     = seed
+        self.popsize   = popsize
+        self.fecundity = fecundity
+        self.genes     = []
+        self.target    = target
+        self.seed      = seed
+        self.avfitness = []
         
         i = 0
         while i < self.popsize:
@@ -88,31 +89,58 @@ class Population:
            gene.select_children(targ=self.target)
     
     def run_generations(self,generations):
-        a = 0
+        self.avfitness.append(self.calc_avfitness())
+        i = 0
         while i < generations:
             self.run_single_generation()
+            self.avfitness.append(self.calc_avfitness())
             i = i + 1
-            print 'Generation no: ' + str(i)
-    
-    def census(self):
+
+    def calc_avfitness(self):
+        cfs = 0
         for i in self.genes:
-            print i.get_fitness(targ = self.target)
+            cfs = cfs + i.get_fitness(targ = self.target)
+        return float(cfs) / float(len(self.genes))
 
-def plot_results(genes):
-    # Generate a histogram showing the distribution of genes
-    pass
+    def get_fitness_trend(self):
+        return self.avfitness
 
+class Experiment:
+
+    def __init__(self):
+        self.populationSize = 10
+        self.fecundity      = 10
+        self.target         = 'TAGACATTAGACATTAGACAT'
+        self.seed           = 'AAAAAAAAAAAAAAAAAAAAA'
+        self.runs           = 10
+        self.generations    = 50
+    
+    def plot_results(self,pdata):
+        # Generate a histogram showing the distribution of genes
+        data = np.array(pdata)
+        plt.plot(np.arange(len(pdata)),data)
+
+    def run(self):
+        i = 0
+        while i < self.runs:
+            #setup population
+            p = Population( popsize=self.populationSize, fecundity=self.fecundity,target=self.target, seed=self.seed)
+             
+            #run generations
+            p.run_generations(generations=self.generations)
+
+            #add the trend in average fitness to a results graph
+            self.plot_results(np.array(p.get_fitness_trend()))
+            i = i + 1
+
+        print('finished running experiment. Type plt.show() to see the results')
 
 def main():
-    
-    #setup population
-    p = Population(popsize=10,fecundity=10,target='TAGACATTAGACAT',seed='AAAAAAAAAAAAAA')
-    
-    #run generations
-    p.run_generations(generations=100)
+    e = Experiment()
+    e.run()
 
-    #output results - plot them next...
-    p.census()
 
 main()
+
+
 
