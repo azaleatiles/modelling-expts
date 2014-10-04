@@ -70,11 +70,12 @@ class Population:
     
     def __init__(self,popsize,fecundity,target,seed):
         
-        self.popsize  = popsize
-        self.fecundity= fecundity
-        self.genes    = []
-        self.target   = target
-        self.seed     = seed
+        self.popsize   = popsize
+        self.fecundity = fecundity
+        self.genes     = []
+        self.target    = target
+        self.seed      = seed
+        self.avfitness = []
         
         i = 0
         while i < self.popsize:
@@ -88,15 +89,21 @@ class Population:
            gene.select_children(targ=self.target)
     
     def run_generations(self,generations):
-        a = 0
+        self.avfitness.append(self.calc_avfitness())
+        i = 0
         while i < generations:
             self.run_single_generation()
+            self.avfitness.append(self.calc_avfitness())
             i = i + 1
-            print 'Generation no: ' + str(i)
-    
-    def census(self):
+
+    def calc_avfitness(self):
+        cfs = 0
         for i in self.genes:
-            print i.get_fitness(targ = self.target)
+            cfs = cfs + i.get_fitness(targ = self.target)
+        return float(cfs) / float(len(self.genes))
+
+    def get_fitness_trend(self):
+        return self.avfitness
 
 def plot_results(genes):
     # Generate a histogram showing the distribution of genes
@@ -112,7 +119,7 @@ def main():
     p.run_generations(generations=100)
 
     #output results - plot them next...
-    p.census()
+    print p.get_fitness_trend()
 
 main()
 
