@@ -105,21 +105,42 @@ class Population:
     def get_fitness_trend(self):
         return self.avfitness
 
-def plot_results(genes):
-    # Generate a histogram showing the distribution of genes
-    pass
+class Experiment:
 
+    def __init__(self):
+        self.populationSize = 10
+        self.fecundity      = 10
+        self.target         = 'TAGACATTAGACATTAGACAT'
+        self.seed           = 'AAAAAAAAAAAAAAAAAAAAA'
+        self.runs           = 10
+        self.generations    = 50
+    
+    def plot_results(self,pdata):
+        # Generate a histogram showing the distribution of genes
+        data = np.array(pdata)
+        plt.plot(np.arange(len(pdata)),data)
+
+    def run(self):
+        i = 0
+        while i < self.runs:
+            #setup population
+            p = Population( popsize=self.populationSize, fecundity=self.fecundity,target=self.target, seed=self.seed)
+             
+            #run generations
+            p.run_generations(generations=self.generations)
+
+            #add the trend in average fitness to a results graph
+            self.plot_results(np.array(p.get_fitness_trend()))
+            i = i + 1
+
+        print('finished running experiment. Type plt.show() to see the results')
 
 def main():
-    
-    #setup population
-    p = Population(popsize=10,fecundity=10,target='TAGACATTAGACAT',seed='AAAAAAAAAAAAAA')
-    
-    #run generations
-    p.run_generations(generations=100)
+    e = Experiment()
+    e.run()
 
-    #output results - plot them next...
-    print p.get_fitness_trend()
 
 main()
+
+
 
